@@ -12,13 +12,11 @@ type map = value Env.t
 
 type global =
   { mutable env : map
-  ; mutable read : map
   ; mutable print : action list
   }
 
 let global =
   { env = Env.empty
-  ; read = Env.empty
   ; print = []
   }
 
