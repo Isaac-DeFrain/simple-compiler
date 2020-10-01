@@ -63,11 +63,8 @@ let evalStmt = function
       let res = evalExpr exp in
       Env.add v res global.env
   | Read s ->
-    global.read <-
-      (match Env.find_opt s global.env with
-        None -> Env.add s Undefined global.read
-        | Some v -> Env.add s v global.read);
-    global.env <- Env.add s Undefined global.env
+    let v = Int (int_of_string (read_line (print_string (s ^ " -> ")))) in
+      global.env <- Env.add s v global.env
   | Print s ->
     global.print <- 
       List.append global.print

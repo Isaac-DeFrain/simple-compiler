@@ -29,7 +29,7 @@ let rec print_expr outc = function
   | Sub  (a, b) -> print_symbol_exps outc "SUB " a b
   | Mult (a, b) -> print_symbol_exps outc "MUL " a b
   | And  (a, b) -> print_symbol_exps outc "AND " a b
-  | Xor  (a, b) -> print_symbol_exps outc "OR " a b
+  | Xor  (a, b) -> print_symbol_exps outc "XOR " a b
   | Var v -> output_string outc (v ^ " ")
   | Dig d -> output_string outc (string_of_int d ^ " ")
 
