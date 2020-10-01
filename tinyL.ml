@@ -17,7 +17,7 @@ and expr =
   | Sub  of expr * expr
   | Mult of expr * expr
   | And  of expr * expr
-  | Or   of expr * expr
+  | Xor  of expr * expr
   | Var  of string
   | Dig  of int
 
@@ -29,7 +29,7 @@ let rec print_expr outc = function
   | Sub  (a, b) -> print_symbol_exps outc "SUB " a b
   | Mult (a, b) -> print_symbol_exps outc "MUL " a b
   | And  (a, b) -> print_symbol_exps outc "AND " a b
-  | Or   (a, b) -> print_symbol_exps outc "OR " a b
+  | Xor  (a, b) -> print_symbol_exps outc "OR " a b
   | Var v -> output_string outc (v ^ " ")
   | Dig d -> output_string outc (string_of_int d ^ " ")
 

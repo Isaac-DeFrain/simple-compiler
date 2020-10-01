@@ -39,7 +39,7 @@ rule read =
   | '-'     { SUB }
   | '*'     { MULT }
   | '&'     { AND }
-  | "\\/"   { OR }
+  | "/\\"   { XOR }
   | ';'     { SEMICOLON }
   | '.'     { END }
   | eof     { EOF }

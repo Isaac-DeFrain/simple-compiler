@@ -49,9 +49,9 @@ let rec evalExpr = function
       Int v1, Int v2 -> Int (Int.logand v1 v2)
     | Undefined, _ -> Undefined
     | _, Undefined -> Undefined)
-  | Or (e1, e2) ->
+  | Xor (e1, e2) ->
     (match (evalExpr e1, evalExpr e2) with
-      Int v1, Int v2 -> Int (Int.logor v1 v2)
+      Int v1, Int v2 -> Int (Int.logxor v1 v2)
     | Undefined, _ -> Undefined
     | _, Undefined -> Undefined)
   | Var v -> Env.find v global.env
