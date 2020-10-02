@@ -3,6 +3,7 @@ open Lexer
 open Lexing
 open Eval
 open Risc
+open Eval_risc
 
 let print_position outx lexbuf =
   let pos = lexbuf.lex_curr_p in
@@ -44,6 +45,12 @@ let parse_and_eval lexbuf =
 let parse_and_translate lexbuf =
   match parse_with_error lexbuf with
   | Some pgm -> Stdlib.List.iter print_risc (Gen.translate pgm)
+  | None -> ()
+
+(* parse, translate, and eval *)
+let parse_translate_eval lexbuf =
+  match parse_with_error lexbuf with
+  | Some pgm -> eval_risc (Gen.translate pgm)
   | None -> ()
 
 (* Interactive mode *)
@@ -99,9 +106,22 @@ let translate f =
     parse_and_translate lexbuf;
     close inx
 
+(* Translate to RISC and evaluate *)
+let translate_and_eval f =
+  let open In_channel in
+  match f with
+  | None -> ()
+  | Some filename ->
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_translate_eval lexbuf;
+    close inx
+
 (* handler function *)
 let do_the_thing f i ast e r () =
-  if r then translate f
+  if r then if e then translate_and_eval f
+            else translate f
   else if i then interact e ast
        else if e then eval_file f
             else which_loop_file f ast
