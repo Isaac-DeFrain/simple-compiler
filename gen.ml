@@ -10,11 +10,14 @@ let get_counter () =
   counter := curr + 1; curr
 
 module StrMap = Map.Make(String)
+module RegMap = Map.Make(Register)
 
 type location_map = register StrMap.t
+type store_map = int RegMap.t
 
 let translateExpr = function
   | Add (e1, e2) ->
+  (* translate each expr and  *)
     begin
       match e1, e2 with
       | _ -> []
