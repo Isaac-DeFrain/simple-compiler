@@ -13,23 +13,23 @@ and stmt =
   | Print  of string
 
 and expr =
-  | Add  of expr * expr
-  | Sub  of expr * expr
-  | Mult of expr * expr
-  | And  of expr * expr
-  | Xor  of expr * expr
-  | Var  of string
-  | Dig  of int
+  | Add of expr * expr
+  | Sub of expr * expr
+  | Mul of expr * expr
+  | And of expr * expr
+  | Xor of expr * expr
+  | Var of string
+  | Dig of int
 
 (* pretty printing *)
 open Out_channel
 
 let rec print_expr outc = function
-  | Add  (a, b) -> print_symbol_exps outc "ADD " a b
-  | Sub  (a, b) -> print_symbol_exps outc "SUB " a b
-  | Mult (a, b) -> print_symbol_exps outc "MUL " a b
-  | And  (a, b) -> print_symbol_exps outc "AND " a b
-  | Xor  (a, b) -> print_symbol_exps outc "XOR " a b
+  | Add (a, b) -> print_symbol_exps outc "ADD " a b
+  | Sub (a, b) -> print_symbol_exps outc "SUB " a b
+  | Mul (a, b) -> print_symbol_exps outc "MUL " a b
+  | And (a, b) -> print_symbol_exps outc "AND " a b
+  | Xor (a, b) -> print_symbol_exps outc "XOR " a b
   | Var v -> output_string outc (v ^ " ")
   | Dig d -> output_string outc (string_of_int d ^ " ")
 

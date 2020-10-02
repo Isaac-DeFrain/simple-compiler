@@ -37,7 +37,7 @@ rule read =
   | '#'     { PRINT }
   | '+'     { ADD }
   | '-'     { SUB }
-  | '*'     { MULT }
+  | '*'     { MUL }
   | '&'     { AND }
   | "/\\"   { XOR }
   | ';'     { SEMICOLON }

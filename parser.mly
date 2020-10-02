@@ -4,7 +4,7 @@
 %token <int> DIGIT
 %token <string> VAR
 %token READ PRINT ASSIGN
-%token ADD SUB MULT
+%token ADD SUB MUL
 %token AND XOR
 %token SEMICOLON END
 %token EOF
@@ -25,11 +25,11 @@ stmt:
   | PRINT VAR                            { Print $2 } ;
 
 expr:
-  | ADD  expr expr                  { Add  ($2, $3) }
-  | SUB  expr expr                  { Sub  ($2, $3) }
-  | MULT expr expr                  { Mult ($2, $3) } 
-  | AND  expr expr                  { And  ($2, $3) }
-  | XOR  expr expr                  { Xor  ($2, $3) }
+  | ADD expr expr                    { Add ($2, $3) }
+  | SUB expr expr                    { Sub ($2, $3) }
+  | MUL expr expr                    { Mul ($2, $3) } 
+  | AND expr expr                    { And ($2, $3) }
+  | XOR expr expr                    { Xor ($2, $3) }
   | VAR                                    { Var $1 }
   | DIGIT                                  { Dig $1 } ;
 

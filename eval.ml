@@ -2,13 +2,9 @@ open TinyL
 
 module Env = Map.Make(String)
 
-type value =
-  | Int of int
-  | Undefined
-
 type action = unit
 
-type map = value Env.t
+type map = int Env.t
 
 type global =
   { mutable env : map
@@ -22,38 +18,16 @@ let global =
 
 let id x = x
 
-let print_value = function
-  | Int i -> string_of_int i |> print_endline
-  | Undefined -> print_endline "undefined"
+let print_value i = string_of_int i |> print_endline
 
 let rec evalExpr = function
-  | Add (e1, e2) ->
-    (match (evalExpr e1, evalExpr e2) with
-      Int v1, Int v2 -> Int (v1 + v2)
-    | Undefined, _ -> Undefined
-    | _, Undefined -> Undefined)
-  | Sub (e1, e2) -> 
-    (match (evalExpr e1, evalExpr e2) with
-      Int v1, Int v2 -> Int (v1 - v2)
-    | Undefined, _ -> Undefined
-    | _, Undefined -> Undefined)
-  | Mult (e1, e2) ->
-    (match (evalExpr e1, evalExpr e2) with
-      Int v1, Int v2 -> Int (v1 * v2)
-    | Undefined, _ -> Undefined
-    | _, Undefined -> Undefined)
-  | And (e1, e2) ->
-    (match (evalExpr e1, evalExpr e2) with
-      Int v1, Int v2 -> Int (Int.logand v1 v2)
-    | Undefined, _ -> Undefined
-    | _, Undefined -> Undefined)
-  | Xor (e1, e2) ->
-    (match (evalExpr e1, evalExpr e2) with
-      Int v1, Int v2 -> Int (Int.logxor v1 v2)
-    | Undefined, _ -> Undefined
-    | _, Undefined -> Undefined)
+  | Add (e1, e2) -> evalExpr e1 + evalExpr e2
+  | Sub (e1, e2) -> evalExpr e1 - evalExpr e2
+  | Mul (e1, e2) -> evalExpr e1 * evalExpr e2
+  | And (e1, e2) -> Int.logand (evalExpr e1) (evalExpr e2)
+  | Xor (e1, e2) -> Int.logor (evalExpr e1) (evalExpr e2)
   | Var v -> Env.find v global.env
-  | Dig d -> Int d
+  | Dig d -> d
 
 let evalStmt = function
   | Assign (v, exp) ->
@@ -61,7 +35,7 @@ let evalStmt = function
       let res = evalExpr exp in
       Env.add v res global.env
   | Read s ->
-    let v = Int (int_of_string (read_line (print_string (s ^ " -> ")))) in
+    let v = int_of_string (read_line (print_string (s ^ " -> "))) in
       global.env <- Env.add s v global.env
   | Print s ->
     global.print <- 
