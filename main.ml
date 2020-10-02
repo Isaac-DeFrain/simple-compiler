@@ -2,6 +2,7 @@ open Core
 open Lexer
 open Lexing
 open Eval
+open Risc
 
 let print_position outx lexbuf =
   let pos = lexbuf.lex_curr_p in
@@ -37,6 +38,12 @@ let rec parse_and_print_sexp lexbuf =
 let parse_and_eval lexbuf =
   match parse_with_error lexbuf with
   | Some pgm -> eval pgm
+  | None -> ()
+
+(* parse and translate *)
+let parse_and_translate lexbuf =
+  match parse_with_error lexbuf with
+  | Some pgm -> Stdlib.List.iter print_risc (Gen.translate pgm)
   | None -> ()
 
 (* Interactive mode *)
@@ -80,11 +87,24 @@ let eval_file f =
     parse_and_eval lexbuf;
     close inx
 
+(* Translate to RISC *)
+let translate f =
+  let open In_channel in
+  match f with
+  | None -> ()
+  | Some filename ->
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_and_translate lexbuf;
+    close inx
+
 (* handler function *)
-let do_the_thing f i ast e () =
-  if i then interact e ast
-  else if e then eval_file f
-       else which_loop_file f ast
+let do_the_thing f i ast e r () =
+  if r then translate f
+  else if i then interact e ast
+       else if e then eval_file f
+            else which_loop_file f ast
 
 (* cli *)
 let () =
@@ -99,5 +119,7 @@ let () =
         ~doc:" Output sexp AST"
       +> flag "-e" no_arg
         ~doc:" Evaluate"
+      +> flag "-risc" no_arg
+      ~doc:" Translate to RISC instructions"
     ) do_the_thing
   |> Command.run
