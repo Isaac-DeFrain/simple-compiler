@@ -25,7 +25,7 @@ let rec evalExpr = function
   | Sub (e1, e2) -> evalExpr e1 - evalExpr e2
   | Mul (e1, e2) -> evalExpr e1 * evalExpr e2
   | And (e1, e2) -> Int.logand (evalExpr e1) (evalExpr e2)
-  | Xor (e1, e2) -> Int.logor (evalExpr e1) (evalExpr e2)
+  | Xor (e1, e2) -> Int.logxor (evalExpr e1) (evalExpr e2)
   | Var v -> Env.find v global.env
   | Dig d -> d
 
