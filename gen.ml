@@ -56,7 +56,8 @@ let rec translateExpr r = function
 
 let translateStmt = function
   | Assign (s, e) ->
-    List.append (translateExpr (R 0) e) [STORE (s, R 0)]
+    let r = next_reg () in
+    List.append (translateExpr r e) [STORE (s, r)]
   | Read s -> [READ s]
   | Print s -> [WRITE s]
 
