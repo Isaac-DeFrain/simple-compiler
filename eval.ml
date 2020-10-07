@@ -35,18 +35,21 @@ let evalStmt = function
       let res = evalExpr exp in
       Env.add v res global.env
   | Read s ->
-    let v = int_of_string (read_line (print_string (s ^ " -> "))) in
-      global.env <- Env.add s v global.env
+    let v = print_string (s ^ " -> ")
+            |> read_line
+            |> int_of_string
+    in
+    global.env <- Env.add s v global.env
   | Print s ->
-    global.print <- 
-      List.append global.print
-        [ print_value (Env.find s global.env)
-        ; print_string (s ^ " -> ")]
+    global.print <- global.print @
+      [ print_value (Env.find s global.env)
+      ; print_string (s ^ " -> ")]
 
 let rec evalStmts = function
   | [] -> List.iter id global.print
   | hd :: tl ->
-    global.print <- List.append global.print [evalStmt hd];
-    evalStmts tl
+    global.print <-
+      global.print @ [evalStmt hd];
+      evalStmts tl
 
 let eval (s0, ss) = evalStmts (s0 :: ss)

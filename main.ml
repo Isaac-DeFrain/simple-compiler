@@ -44,21 +44,26 @@ let parse_and_eval lexbuf =
 (* parse and translate *)
 let parse_and_translate lexbuf =
   match parse_with_error lexbuf with
-  | Some pgm -> Stdlib.List.iter print_risc (Gen.translate pgm)
+  | Some pgm ->
+    Gen.translate pgm
+    |> List.iter ~f:print_risc
   | None -> ()
 
 (* parse, translate, and eval *)
 let parse_translate_eval lexbuf =
   match parse_with_error lexbuf with
-  | Some pgm -> eval_risc (Gen.translate pgm)
+  | Some pgm ->
+    Gen.translate pgm
+    |> eval_risc
   | None -> ()
 
 (* parse, translate, and optimize *)
 let parse_and_optimize lexbuf =
   match parse_with_error lexbuf with
   | Some pgm ->
-    Stdlib.List.iter print_risc
-      (Gen.translate pgm |> Optimize.optimize)
+    Gen.translate pgm
+    |> Optimize.optimize
+    |> List.iter ~f:print_risc
   | None -> ()
 
 (* Interactive mode *)
@@ -67,20 +72,23 @@ let interact e ast =
   let pp =
     match e, ast with
       true, _ -> parse_and_eval
-      | _, a -> if a then parse_and_print_sexp else parse_and_print in
-  let l = input_line stdin in
-  match l with
+      | _, a -> if a then parse_and_print_sexp
+                else parse_and_print
+  in
+  match input_line stdin with
   | None -> ()
   | Some code ->
-  print_endline "";
+    Out_channel.newline stdout;
     let lexbuf = Lexing.from_string code in
     pp lexbuf;
     close stdin
 
 (* Read code from file *)
-let which_loop_file f ast =
+let from_file f ast =
   let open In_channel in
-  let pp = if ast then parse_and_print_sexp else parse_and_print in
+  let pp =
+    if ast then parse_and_print_sexp
+    else parse_and_print in
   match f with
     | None -> ()
     | Some filename ->
@@ -139,13 +147,13 @@ let translate_optimize f =
     close inx
 
 (* handler function *)
-let do_the_thing f i ast e r o () =
+let handler f i ast e r o () =
   if r then if e then translate_and_eval f
             else if o then translate_optimize f
                  else translate f
   else if i then interact e ast
        else if e then eval_file f
-            else which_loop_file f ast
+            else from_file f ast
 
 (* cli *)
 let () =
@@ -164,5 +172,5 @@ let () =
       ~doc:" Translate to RISC instructions"
       +> flag "-o" no_arg
       ~doc:" Optimize RISC code"
-    ) do_the_thing
+    ) handler
   |> Command.run

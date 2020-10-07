@@ -14,55 +14,45 @@ let rec translateExpr r = function
   | Add (e1, e2) ->
     let r1 = next_reg () in
     let r2 = next_reg () in
-    List.append
-      (List.append
-        (translateExpr r1 e1)
-        (translateExpr r2 e2))
-      [ADD (r, r1, r2)]
+    translateExpr r1 e1
+    @ translateExpr r2 e2
+    @ [ADD (r, r1, r2)]
   | Sub (e1, e2) ->
     let r1 = next_reg () in
     let r2 = next_reg () in
-    List.append
-      (List.append
-        (translateExpr r1 e1)
-        (translateExpr r2 e2))
-      [SUB (r, r1, r2)]
+    translateExpr r1 e1
+    @ translateExpr r2 e2
+    @ [SUB (r, r1, r2)]
   | Mul (e1, e2) ->
     let r1 = next_reg () in
     let r2 = next_reg () in
-    List.append
-      (List.append
-        (translateExpr r1 e1)
-        (translateExpr r2 e2))
-      [MUL (r, r1, r2)]
+    translateExpr r1 e1
+    @ translateExpr r2 e2
+    @ [MUL (r, r1, r2)]
   | And (e1, e2) ->
     let r1 = next_reg () in
     let r2 = next_reg () in
-    List.append
-      (List.append
-        (translateExpr r1 e1)
-        (translateExpr r2 e2))
-      [AND (r, r1, r2)]
+    translateExpr r1 e1
+    @ translateExpr r2 e2
+    @ [AND (r, r1, r2)]
   | Xor (e1, e2) ->
     let r1 = next_reg () in
     let r2 = next_reg () in
-    List.append
-      (List.append
-        (translateExpr r1 e1)
-        (translateExpr r2 e2))
-      [XOR (r, r1, r2)]
-  | Var s -> [LOAD (r, s)]
+    translateExpr r1 e1
+    @ translateExpr r2 e2
+    @ [XOR (r, r1, r2)]
+  | Var v -> [LOAD  (r, v)]
   | Dig i -> [LOADI (r, i)]
 
 let translateStmt = function
-  | Assign (s, e) ->
+  | Assign (v, e) ->
     let r = next_reg () in
-    List.append (translateExpr r e) [STORE (s, r)]
-  | Read s -> [READ s]
-  | Print s -> [WRITE s]
+    translateExpr r e @ [STORE (v, r)]
+  | Read  v -> [READ v]
+  | Print v -> [WRITE v]
 
 let rec translateStmts = function
   | [] -> []
-  | hd :: tl -> List.append (translateStmt hd) (translateStmts tl)
+  | hd :: tl -> translateStmt hd @ translateStmts tl
 
 let translate (s0, ss) = translateStmts (s0 :: ss)
