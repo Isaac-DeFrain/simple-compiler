@@ -53,6 +53,14 @@ let parse_translate_eval lexbuf =
   | Some pgm -> eval_risc (Gen.translate pgm)
   | None -> ()
 
+(* parse, translate, and optimize *)
+let parse_and_optimize lexbuf =
+  match parse_with_error lexbuf with
+  | Some pgm ->
+    Stdlib.List.iter print_risc
+      (Gen.translate pgm |> Optimize.optimize)
+  | None -> ()
+
 (* Interactive mode *)
 let interact e ast =
   let open In_channel in
@@ -118,10 +126,23 @@ let translate_and_eval f =
     parse_translate_eval lexbuf;
     close inx
 
+(* Translate to RISC and optimize *)
+let translate_optimize f =
+  let open In_channel in
+  match f with
+  | None -> ()
+  | Some filename ->
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_and_optimize lexbuf;
+    close inx
+
 (* handler function *)
-let do_the_thing f i ast e r () =
+let do_the_thing f i ast e r o () =
   if r then if e then translate_and_eval f
-            else translate f
+            else if o then translate_optimize f
+                 else translate f
   else if i then interact e ast
        else if e then eval_file f
             else which_loop_file f ast
@@ -141,5 +162,7 @@ let () =
         ~doc:" Evaluate"
       +> flag "-risc" no_arg
       ~doc:" Translate to RISC instructions"
+      +> flag "-o" no_arg
+      ~doc:" Optimize RISC code"
     ) do_the_thing
   |> Command.run
