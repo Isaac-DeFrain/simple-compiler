@@ -71,11 +71,9 @@ let print_tiny outc = function
   | (s, l) ->
     print_stmt outc s;
     output_string outc ";\n";
-    print_stmt_list outc l;
-    output_string outc "--------\nSuccess!"
+    print_stmt_list outc l
 
 (* print sexp *)
 let print_sexp outc p =
   let s = Sexp.to_string_hum (sexp_of_pgm p) in
-  output_string outc s;
-  output_string outc "\n--------\nSuccess!"
+  output_string outc s
