@@ -5,7 +5,7 @@ type register = Register.t
 type risc_instruction =
   (* memory *)
   | LOADI of register * int
-  | LOAD  of register * string
+  | LOAD of register * string
   | STORE of string * register
   (* arithmetic *)
   | ADD of register * register * register
@@ -14,9 +14,9 @@ type risc_instruction =
   | AND of register * register * register
   | XOR of register * register * register
   (* i/o *)
-  | READ  of string
+  | READ of string
   | WRITE of string
-  
+
 let string_of_reg (R i : register) = "R" ^ string_of_int i
 
 let string_of_regs r1 r2 r3 =
@@ -24,9 +24,9 @@ let string_of_regs r1 r2 r3 =
 
 let print_risc = function
   | LOADI (r, j) ->
-    print_endline ("LOADI " ^ string_of_reg r ^ " #" ^ string_of_int j)
-  | LOAD  (r, s) -> print_endline ("LOAD "  ^ string_of_reg r ^ " " ^ s)
-  | STORE (s, r) -> print_endline ("STORE "  ^ s ^ " " ^ string_of_reg r)
+      print_endline ("LOADI " ^ string_of_reg r ^ " #" ^ string_of_int j)
+  | LOAD (r, s) -> print_endline ("LOAD " ^ string_of_reg r ^ " " ^ s)
+  | STORE (s, r) -> print_endline ("STORE " ^ s ^ " " ^ string_of_reg r)
   | ADD (r1, r2, r3) -> print_endline ("ADD " ^ string_of_regs r1 r2 r3)
   | SUB (r1, r2, r3) -> print_endline ("SUB " ^ string_of_regs r1 r2 r3)
   | MUL (r1, r2, r3) -> print_endline ("MUL " ^ string_of_regs r1 r2 r3)
