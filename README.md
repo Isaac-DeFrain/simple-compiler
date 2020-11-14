@@ -2,9 +2,9 @@
 
 In this project, we implement a compiler, interpreter, and code optimizer for the `tinyL` language.
 
-The lexer and parser are implemented using the OCaml parser generator, Menhir.
+The lexer and parser are implemented using the OCaml parser generator, `Menhir`.
 
-## tinyL grammar
+## TinyL grammar
 
 ```txt
 <program>   ::= <stmt_list> .
@@ -33,7 +33,7 @@ The compiler is written in 5 parts:
 
 2. `parser.mly` generates the parser (tinyL AST)
 
-3. `tinyL.ml` defines the tinyL AST
+3. `ast.ml` defines the tinyL AST
 
 4. `risc.ml` defines the RISC AST
 
