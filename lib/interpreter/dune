@@ -1,3 +1,5 @@
 (library
   (name interpreter)
+  (inline_tests)
+  (preprocess (pps ppx_inline_test))
   (libraries core ast instructions))
