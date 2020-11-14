@@ -1,8 +1,8 @@
 (* Evaluation of RISC code *)
 
-open Risc
+open Instructions.Risc
 module VarMap = Map.Make (String)
-module RegMap = Map.Make (Register)
+module RegMap = Map.Make (Instructions.Register)
 
 type value_map = int VarMap.t
 

@@ -1,6 +1,7 @@
 (* RISC instructions *)
+open Register
 
-type register = Register.t
+type register = t
 
 type risc_instruction =
   (* memory *)

@@ -1,9 +1,12 @@
 open Core
-open Lexer
+open Interpreter.Eval
+open Instructions.Gen
+open Instructions.Optimize
+open Instructions.Risc
+open Interpreter.Eval_risc
 open Lexing
-open Eval
-open Risc
-open Eval_risc
+open Parsing.Lexer
+open Parsing.Parser
 
 let print_position outx lexbuf =
   let pos = lexbuf.lex_curr_p in
@@ -15,11 +18,11 @@ let print_position outx lexbuf =
     (pos.pos_cnum - pos.pos_bol + 1)
 
 let parse_with_error lexbuf =
-  try Parser.prog read lexbuf with
+  try prog read lexbuf with
   | SyntaxError msg ->
       fprintf stderr "%a: %s\n" print_position lexbuf msg ;
       None
-  | Parser.Error ->
+  | Error ->
       fprintf stderr "%a: syntax error\n" print_position lexbuf ;
       exit (-1)
 
@@ -27,7 +30,7 @@ let parse_with_error lexbuf =
 let rec parse_and_print lexbuf =
   match parse_with_error lexbuf with
   | Some value ->
-      printf "%a\n" TinyL.print_tiny value ;
+      printf "%a\n" Ast.print_tiny value ;
       parse_and_print lexbuf
   | None -> ()
 
@@ -35,7 +38,7 @@ let rec parse_and_print lexbuf =
 let rec parse_and_print_sexp lexbuf =
   match parse_with_error lexbuf with
   | Some value ->
-      printf "%a\n" TinyL.print_sexp value ;
+      printf "%a\n" Ast.print_sexp value ;
       parse_and_print_sexp lexbuf
   | None -> ()
 
@@ -46,20 +49,19 @@ let parse_and_eval lexbuf =
 (* parse and translate *)
 let parse_and_translate lexbuf =
   match parse_with_error lexbuf with
-  | Some pgm -> Gen.translate pgm |> List.iter ~f:print_risc
+  | Some pgm -> translate pgm |> List.iter ~f:print_risc
   | None -> ()
 
 (* parse, translate, and eval *)
 let parse_translate_eval lexbuf =
   match parse_with_error lexbuf with
-  | Some pgm -> Gen.translate pgm |> eval_risc
+  | Some pgm -> translate pgm |> eval_risc
   | None -> ()
 
 (* parse, translate, and optimize *)
 let parse_and_optimize lexbuf =
   match parse_with_error lexbuf with
-  | Some pgm ->
-      Gen.translate pgm |> Optimize.optimize |> List.iter ~f:print_risc
+  | Some pgm -> translate pgm |> optimize |> List.iter ~f:print_risc
   | None -> ()
 
 (* Interactive mode *)
@@ -152,7 +154,7 @@ let handler f i ast e r o () =
 (* cli *)
 let () =
   Command.basic_spec
-    ~summary:"Parse and display TinyL code"
+    ~summary:"Parse, display, and evaluate tinyL programs"
     Command.Spec.(
       empty
       +> flag "-f" (optional string) ~doc:" Read code from file"

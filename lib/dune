@@ -1,0 +1,10 @@
+(library
+  (name tinyL)
+  (preprocess (pps ppx_sexp_conv))
+  (libraries
+    core
+    sexplib
+    ast
+    instructions
+    interpreter
+    parsing))

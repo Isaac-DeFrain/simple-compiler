@@ -1,6 +1,6 @@
 (* RISC code generation *)
 
-open TinyL
+open Ast
 open Risc
 open Register
 

@@ -1,0 +1,3 @@
+(library
+  (name instructions)
+  (libraries core ast))

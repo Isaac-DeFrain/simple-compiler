@@ -9,9 +9,9 @@
 %token SEMICOLON END
 %token EOF
 
-%start <TinyL.pgm option> prog
-%type  <TinyL.stmt> stmt
-%type  <TinyL.expr> expr
+%start <Ast.pgm option> prog
+%type  <Ast.stmt> stmt
+%type  <Ast.expr> expr
 %%
 
 prog:

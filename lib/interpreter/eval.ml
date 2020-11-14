@@ -1,4 +1,4 @@
-open TinyL
+open Ast
 module Env = Map.Make (String)
 
 type action = unit
