@@ -57,3 +57,15 @@ let rec eval_risc = function
   | hd :: tl ->
       eval_instruction hd ;
       eval_risc tl
+
+(* unit tests *)
+let%expect_test _ =
+  eval_risc [];
+  [%expect{||}]
+
+let%expect_test _ =
+  let i = Random.int 99999 in
+  eval_risc [LOADI (R i, 0); STORE ("a", R i); WRITE "a"];
+  [%expect{|
+    a -> 0
+  |}]
