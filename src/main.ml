@@ -66,11 +66,19 @@ let parse_and_optimize lexbuf =
 
 (* Interactive mode *)
 let interact e ast =
+  let open Out_channel in
   let open In_channel in
+  print_endline "Enter a tinyL program:" ;
   let pp =
     match (e, ast) with
     | (true, _) -> parse_and_eval
-    | (_, a) -> if a then parse_and_print_sexp else parse_and_print
+    | (_, a) ->
+        if a then ( fun s ->
+          print_endline "Sexp AST:" ;
+          parse_and_print_sexp s )
+        else fun s ->
+          print_endline "Generated RISC code:" ;
+          parse_and_print s
   in
   match input_line stdin with
   | None -> ()
