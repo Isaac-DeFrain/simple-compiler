@@ -1,3 +1,6 @@
+all:
+			dune build; dune runtest
+
 build:
 			dune build
 
@@ -11,6 +14,6 @@ interpreter:
 			dune exec -- ./src/main.exe -i
 
 test:
-			dune runtest test
+			dune runtest
 
-.PHONY: build clean help interpreter test
+.PHONY: all build clean help interpreter test
