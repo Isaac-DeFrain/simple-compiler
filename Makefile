@@ -1,5 +1,4 @@
-all:
-			dune build; dune runtest
+all: build test
 
 build:
 			dune build
