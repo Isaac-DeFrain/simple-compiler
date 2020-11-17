@@ -1,18 +1,16 @@
-all: build test
+all: clean build test
 
 build:
-			dune build
+			@dune build
 
 clean:
-			dune clean
+			@dune clean
 
 help:
-			dune exec -- ./src/main.exe -h
+			@dune exec -- ./src/main.exe -h
 
 interpreter:
-			dune exec -- ./src/main.exe -i
+			@dune exec -- ./src/main.exe -i
 
-test:
-			dune runtest
-
-.PHONY: all build clean help interpreter test
+test: clean
+			@dune runtest

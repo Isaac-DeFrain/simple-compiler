@@ -9,7 +9,7 @@ type global = { mutable env : map; mutable print : action list }
 
 let global = { env = Env.empty; print = [] }
 
-let id x = x
+let id = Fun.id
 
 let print_value i = string_of_int i |> print_endline
 
