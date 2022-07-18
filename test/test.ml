@@ -26,7 +26,7 @@ let parse_with_error lexbuf =
       exit (-1)
 
 let find_tests () =
-  Sys.getcwd () |> Sys.readdir |> Array.to_list
+  Sys_unix.getcwd () |> Sys_unix.readdir |> Array.to_list
   |> List.filter ~f:(fun s -> Str.string_match (Str.regexp ".*\\.tyl") s 0)
   |> List.sort ~compare
 

@@ -1,4 +1,11 @@
 (executable
-  (libraries core sexplib tinyL)
-  (preprocess (pps ppx_sexp_conv))
-  (name main))
+ (name main)
+ (libraries
+  ; external
+  core
+  core_unix.command_unix
+  sexplib
+  ; internal
+  tinyL)
+ (preprocess
+  (pps ppx_sexp_conv)))

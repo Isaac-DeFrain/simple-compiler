@@ -1,5 +1,12 @@
 (library
-  (name test)
-  (inline_tests)
-  (preprocess (pps ppx_inline_test ppx_expect))
-  (libraries core tinyL str))
+ (name test)
+ (inline_tests)
+ (preprocess
+  (pps ppx_inline_test ppx_expect))
+ (libraries
+  ; external
+  core
+  core_unix.sys_unix
+  str
+  ; internal
+  tinyL))

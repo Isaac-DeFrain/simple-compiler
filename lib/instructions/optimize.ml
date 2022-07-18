@@ -94,16 +94,16 @@ let optimize ilist =
   List.filter necessary ilist
 
 (* TODO:
-  reuse variable registers instead of loading the same variable multiple times
-  E.g. a=0;b=+a1;c=+a2;b=*bc;#b.
-  Should be:
-  LOADI r0 #0
-  STORE a r0
-  LOAD r1 a
-  LOADI r2 #1
-  ADD r3 r1 r2
-  LOADI r4 #2
-  ADD r5 r1 r4
-  STORE c r5
-  ...
+   reuse variable registers instead of loading the same variable multiple times
+   E.g. a=0;b=+a1;c=+a2;b=*bc;#b.
+   Should be:
+   LOADI r0 #0
+   STORE a r0
+   LOAD r1 a
+   LOADI r2 #1
+   ADD r3 r1 r2
+   LOADI r4 #2
+   ADD r5 r1 r4
+   STORE c r5
+   ...
 *)

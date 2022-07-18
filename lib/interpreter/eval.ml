@@ -28,18 +28,12 @@ let eval_stmt = function
         (let res = eval_expr exp in
          Env.add v res global.env)
   | Read s ->
-      let v =
-        print_string (s ^ " -> ")
-        |> read_line
-        |> int_of_string
-      in
+      let v = print_string (s ^ " -> ") |> read_line |> int_of_string in
       global.env <- Env.add s v global.env
   | Print s ->
       global.print <-
         global.print
-        @ [ print_value (Env.find s global.env)
-          ; print_string (s ^ " -> ")
-          ]
+        @ [print_value (Env.find s global.env); print_string (s ^ " -> ")]
 
 let rec eval_stmts = function
   | [] -> List.iter id global.print

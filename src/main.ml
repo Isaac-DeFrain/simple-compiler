@@ -73,9 +73,9 @@ let interact e ast =
     match (e, ast) with
     | (true, _) -> parse_and_eval
     | (_, a) ->
-        if a then ( fun s ->
+        if a then (fun s ->
           print_endline "Sexp AST:" ;
-          parse_and_print_sexp s )
+          parse_and_print_sexp s)
         else fun s ->
           print_endline "Generated RISC code:" ;
           parse_and_print s
@@ -172,4 +172,4 @@ let () =
       +> flag "-risc" no_arg ~doc:" Translate to RISC instructions"
       +> flag "-o" no_arg ~doc:" Optimize RISC code")
     handler
-  |> Command.run
+  |> Command_unix.run
