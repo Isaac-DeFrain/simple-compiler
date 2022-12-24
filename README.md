@@ -1,12 +1,38 @@
-# TinyL compiler, interpreter, and RISC code optimizer
+# TinyL compiler, interpreter, and code optimizer
 
-In this project, we implement a compiler, interpreter, and code optimizer for the `tinyL` language.
+Implementation of compiler, interpreter, and code optimizer for the [`tinyL` language](./README.md#tinyl-grammar)
 
-The lexer and parser are implemented using the OCaml parser generator, `Menhir`.
+The lexer and parser are implemented with `menhir`
+
+## Build
+
+```sh
+git clone https://github.com/Isaac-DeFrain/simple-compiler.git
+cd simple-compiler
+opam switch create simple-compiler 4.14.1
+opam install . --deps-only
+eval $(opam env)
+dune build
+```
+
+### Help
+
+```
+make help
+```
+
+### Interactive mode
+
+```sh
+# translation from tinyL to risc
+dune exec -- _build/default/bin/main.exe -i
+# evaluate tinyL program
+dune exec -- _build/default/bin/main.exe -i -e
+```
 
 ## TinyL grammar
 
-```txt
+```
 <program>   ::= <stmt_list> .
 <stmt list> ::= <stmt> <morestmts>
 <morestmts> ::= ; <stmt_list> | ε
@@ -25,9 +51,36 @@ The lexer and parser are implemented using the OCaml parser generator, `Menhir`.
 <digit>     ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 ```
 
+## Example
+
+```sh
+# tinyL program
+cat test/test1.tyl 
+# Output:
+#   ?a;?b;c=+ab;#c.
+
+# risc-ify the tinyL
+dune exec -- _build/default/bin/main.exe -f test/test1.tyl
+# Output:
+#   READ a;
+#   READ b;
+#   c = ADD a b ;
+#   PRINT c;
+
+# now evaluate the tinyL program
+dune exec -- _build/default/bin/main.exe -f test/test1.tyl -e
+# we need to provide values for the variables a and b, e.g.
+#   a -> 19
+#   b -> 23
+# Output:
+#   c -> 42
+```
+
+[more examples](./test)
+
 ## Compiler
 
-The compiler is written in 5 parts:
+Written in 5 parts:
 
 1. `lexer.mll` generates the lexer
 
@@ -47,7 +100,7 @@ There are 2 interpreters:
 
 2. `eval_risc.ml` interprets RISC ASTs
 
-## Optimizer
+## Code Optimizer
 
 `optimize.ml` eliminates dead RISC code
 
