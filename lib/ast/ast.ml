@@ -5,7 +5,10 @@ type 'a ne_list = 'a * 'a list [@@deriving sexp_of]
 
 type pgm = stmt ne_list [@@deriving sexp_of]
 
-and stmt = Assign of string * expr | Read of string | Print of string
+and stmt =
+  | Assign of string * expr
+  | Read of string
+  | Print of string
 
 and expr =
   | Add of expr * expr
@@ -29,25 +32,25 @@ let rec print_expr outc = function
   | Dig d -> output_string outc (string_of_int d ^ " ")
 
 and print_symbol_exps outc sym a b =
-  output_string outc sym ;
-  print_expr outc a ;
+  output_string outc sym;
+  print_expr outc a;
   print_expr outc b
 
 let print_assign outc = function
-  | (v, e) ->
-      output_string outc v ;
-      output_string outc " = " ;
-      print_expr outc e
+  | v, e ->
+    output_string outc v;
+    output_string outc " = ";
+    print_expr outc e
 
 let print_read outc = function
   | v ->
-      output_string outc "READ " ;
-      output_string outc v
+    output_string outc "READ ";
+    output_string outc v
 
 let print_print outc = function
   | v ->
-      output_string outc "PRINT " ;
-      output_string outc v
+    output_string outc "PRINT ";
+    output_string outc v
 
 let print_stmt outc = function
   | Assign (v, e) -> print_assign outc (v, e)
@@ -57,16 +60,16 @@ let print_stmt outc = function
 let rec print_stmt_list outc = function
   | [] -> ()
   | hd :: tl ->
-      print_stmt outc hd ;
-      output_string outc ";\n" ;
-      print_stmt_list outc tl
+    print_stmt outc hd;
+    output_string outc ";\n";
+    print_stmt_list outc tl
 
 (* print formatted AST *)
 let print_tiny outc = function
-  | (s, l) ->
-      print_stmt outc s ;
-      output_string outc ";\n" ;
-      print_stmt_list outc l
+  | s, l ->
+    print_stmt outc s;
+    output_string outc ";\n";
+    print_stmt_list outc l
 
 (* print sexp *)
 let print_sexp outc p =

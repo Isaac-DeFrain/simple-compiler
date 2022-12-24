@@ -10,41 +10,39 @@ open Parsing.Parser
 
 let print_position outx lexbuf =
   let pos = lexbuf.lex_curr_p in
-  fprintf
-    outx
-    "%s:%d:%d"
-    pos.pos_fname
-    pos.pos_lnum
+  fprintf outx "%s:%d:%d" pos.pos_fname pos.pos_lnum
     (pos.pos_cnum - pos.pos_bol + 1)
 
 let parse_with_error lexbuf =
   try prog read lexbuf with
   | SyntaxError msg ->
-      fprintf stderr "%a: %s\n" print_position lexbuf msg ;
-      None
+    fprintf stderr "%a: %s\n" print_position lexbuf msg;
+    None
   | Error ->
-      fprintf stderr "%a: syntax error\n" print_position lexbuf ;
-      exit (-1)
+    fprintf stderr "%a: syntax error\n" print_position lexbuf;
+    exit (-1)
 
 (* parse and print formatted code *)
 let rec parse_and_print lexbuf =
   match parse_with_error lexbuf with
   | Some value ->
-      printf "%a\n" Ast.print_tiny value ;
-      parse_and_print lexbuf
+    printf "%a\n" Ast.print_tiny value;
+    parse_and_print lexbuf
   | None -> ()
 
 (* parse and print sexp *)
 let rec parse_and_print_sexp lexbuf =
   match parse_with_error lexbuf with
   | Some value ->
-      printf "%a\n" Ast.print_sexp value ;
-      parse_and_print_sexp lexbuf
+    printf "%a\n" Ast.print_sexp value;
+    parse_and_print_sexp lexbuf
   | None -> ()
 
 (* parse and evaluate *)
 let parse_and_eval lexbuf =
-  match parse_with_error lexbuf with Some pgm -> eval pgm | None -> ()
+  match parse_with_error lexbuf with
+  | Some pgm -> eval pgm
+  | None -> ()
 
 (* parse and translate *)
 let parse_and_translate lexbuf =
@@ -68,25 +66,25 @@ let parse_and_optimize lexbuf =
 let interact e ast =
   let open Out_channel in
   let open In_channel in
-  print_endline "Enter a tinyL program:" ;
+  print_endline "Enter a tinyL program:";
   let pp =
     match (e, ast) with
-    | (true, _) -> parse_and_eval
-    | (_, a) ->
-        if a then (fun s ->
-          print_endline "Sexp AST:" ;
-          parse_and_print_sexp s)
-        else fun s ->
-          print_endline "Generated RISC code:" ;
-          parse_and_print s
+    | true, _ -> parse_and_eval
+    | _, a ->
+      if a then (fun s ->
+        print_endline "Sexp AST:";
+        parse_and_print_sexp s)
+      else fun s ->
+        print_endline "Generated RISC code:";
+        parse_and_print s
   in
   match input_line stdin with
   | None -> ()
   | Some code ->
-      Out_channel.newline stdout ;
-      let lexbuf = Lexing.from_string code in
-      pp lexbuf ;
-      close stdin
+    Out_channel.newline stdout;
+    let lexbuf = Lexing.from_string code in
+    pp lexbuf;
+    close stdin
 
 (* Read code from file *)
 let from_file f ast =
@@ -95,11 +93,11 @@ let from_file f ast =
   match f with
   | None -> ()
   | Some filename ->
-      let inx = create filename in
-      let lexbuf = Lexing.from_channel inx in
-      lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } ;
-      pp lexbuf ;
-      close inx
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    pp lexbuf;
+    close inx
 
 (* Eval mode *)
 let eval_file f =
@@ -107,11 +105,11 @@ let eval_file f =
   match f with
   | None -> ()
   | Some filename ->
-      let inx = create filename in
-      let lexbuf = Lexing.from_channel inx in
-      lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } ;
-      parse_and_eval lexbuf ;
-      close inx
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_and_eval lexbuf;
+    close inx
 
 (* Translate to RISC *)
 let translate f =
@@ -119,11 +117,11 @@ let translate f =
   match f with
   | None -> ()
   | Some filename ->
-      let inx = create filename in
-      let lexbuf = Lexing.from_channel inx in
-      lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } ;
-      parse_and_translate lexbuf ;
-      close inx
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_and_translate lexbuf;
+    close inx
 
 (* Translate to RISC and evaluate *)
 let translate_and_eval f =
@@ -131,11 +129,11 @@ let translate_and_eval f =
   match f with
   | None -> ()
   | Some filename ->
-      let inx = create filename in
-      let lexbuf = Lexing.from_channel inx in
-      lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } ;
-      parse_translate_eval lexbuf ;
-      close inx
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_translate_eval lexbuf;
+    close inx
 
 (* Translate to RISC and optimize *)
 let translate_optimize f =
@@ -143,11 +141,11 @@ let translate_optimize f =
   match f with
   | None -> ()
   | Some filename ->
-      let inx = create filename in
-      let lexbuf = Lexing.from_channel inx in
-      lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } ;
-      parse_and_optimize lexbuf ;
-      close inx
+    let inx = create filename in
+    let lexbuf = Lexing.from_channel inx in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
+    parse_and_optimize lexbuf;
+    close inx
 
 (* handler function *)
 let handler f i ast e r o () =
@@ -161,8 +159,7 @@ let handler f i ast e r o () =
 
 (* cli *)
 let () =
-  Command.basic_spec
-    ~summary:"Parse, display, and evaluate tinyL programs"
+  Command.basic_spec ~summary:"Parse, display, and evaluate tinyL programs"
     Command.Spec.(
       empty
       +> flag "-f" (optional string) ~doc:" Read code from file"

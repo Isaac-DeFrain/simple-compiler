@@ -5,7 +5,10 @@ type action = unit
 
 type map = int Env.t
 
-type global = { mutable env : map; mutable print : action list }
+type global =
+  { mutable env : map
+  ; mutable print : action list
+  }
 
 let global = { env = Env.empty; print = [] }
 
@@ -24,22 +27,22 @@ let rec eval_expr = function
 
 let eval_stmt = function
   | Assign (v, exp) ->
-      global.env <-
-        (let res = eval_expr exp in
-         Env.add v res global.env)
+    global.env <-
+      (let res = eval_expr exp in
+       Env.add v res global.env)
   | Read s ->
-      let v = print_string (s ^ " -> ") |> read_line |> int_of_string in
-      global.env <- Env.add s v global.env
+    let v = print_string (s ^ " -> ") |> read_line |> int_of_string in
+    global.env <- Env.add s v global.env
   | Print s ->
-      global.print <-
-        global.print
-        @ [print_value (Env.find s global.env); print_string (s ^ " -> ")]
+    global.print <-
+      global.print
+      @ [ print_value (Env.find s global.env); print_string (s ^ " -> ") ]
 
 let rec eval_stmts = function
   | [] -> List.iter id global.print
   | hd :: tl ->
-      global.print <- global.print @ [eval_stmt hd] ;
-      eval_stmts tl
+    global.print <- global.print @ [ eval_stmt hd ];
+    eval_stmts tl
 
 let eval (s0, ss) = eval_stmts (s0 :: ss)
 

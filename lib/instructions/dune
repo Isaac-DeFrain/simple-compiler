@@ -1,3 +1,4 @@
 (library
  (name instructions)
- (libraries core ast))
+ (libraries core ast)
+ (modules gen optimize register risc))

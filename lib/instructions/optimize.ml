@@ -16,27 +16,31 @@ let rec dedup = function
 
 (* Registers used in a given RISC instruction *)
 let registers_used_in_instruction = function
-  | LOADI (r, _) -> [r]
-  | LOAD (r, _) -> [r]
-  | STORE (_, r) -> [r]
-  | ADD (r0, r1, r2) -> [r0; r1; r2]
-  | SUB (r0, r1, r2) -> [r0; r1; r2]
-  | MUL (r0, r1, r2) -> [r0; r1; r2]
-  | AND (r0, r1, r2) -> [r0; r1; r2]
-  | XOR (r0, r1, r2) -> [r0; r1; r2]
+  | LOADI (r, _) -> [ r ]
+  | LOAD (r, _) -> [ r ]
+  | STORE (_, r) -> [ r ]
+  | ADD (r0, r1, r2) -> [ r0; r1; r2 ]
+  | SUB (r0, r1, r2) -> [ r0; r1; r2 ]
+  | MUL (r0, r1, r2) -> [ r0; r1; r2 ]
+  | AND (r0, r1, r2) -> [ r0; r1; r2 ]
+  | XOR (r0, r1, r2) -> [ r0; r1; r2 ]
   | _ -> []
 
 (* Registers used in RISC instruction list *)
 let rec registers = function
   | [] -> []
   | hd :: tl ->
-      registers_used_in_instruction hd @ registers tl
-      |> dedup |> List.sort Register.compare
+    registers_used_in_instruction hd @ registers tl
+    |> dedup |> List.sort Register.compare
 
-let is_read = function READ _ -> true | _ -> false
+let is_read = function
+  | READ _ -> true
+  | _ -> false
 
 (* Maps variables to registers *)
-let store_reg s = function STORE (v, r) -> VarMap.add v r s | _ -> s
+let store_reg s = function
+  | STORE (v, r) -> VarMap.add v r s
+  | _ -> s
 
 let rec store_regs s = function
   | [] -> s
@@ -46,30 +50,37 @@ let rec store_regs s = function
 let store = store_regs VarMap.empty
 
 (* Determines the registers contributing to output *)
-let write_register s = function WRITE v -> [VarMap.find v s] | _ -> []
+let write_register s = function
+  | WRITE v -> [ VarMap.find v s ]
+  | _ -> []
 
 let rec write_registers s = function
   | [] -> []
   | hd :: tl ->
-      write_register s hd @ write_registers s tl |> List.sort Register.compare
+    write_register s hd @ write_registers s tl |> List.sort Register.compare
 
 let write_regs ilist = write_registers (store ilist) ilist
 
 (* Determines list of registers contributing to the given register *)
 let used r = function
-  | ADD (r0, r1, r2) -> if r = r0 || r = r1 || r = r2 then [r0; r1; r2] else []
-  | SUB (r0, r1, r2) -> if r = r0 || r = r1 || r = r2 then [r0; r1; r2] else []
-  | MUL (r0, r1, r2) -> if r = r0 || r = r1 || r = r2 then [r0; r1; r2] else []
-  | AND (r0, r1, r2) -> if r = r0 || r = r1 || r = r2 then [r0; r1; r2] else []
-  | XOR (r0, r1, r2) -> if r = r0 || r = r1 || r = r2 then [r0; r1; r2] else []
+  | ADD (r0, r1, r2) ->
+    if r = r0 || r = r1 || r = r2 then [ r0; r1; r2 ] else []
+  | SUB (r0, r1, r2) ->
+    if r = r0 || r = r1 || r = r2 then [ r0; r1; r2 ] else []
+  | MUL (r0, r1, r2) ->
+    if r = r0 || r = r1 || r = r2 then [ r0; r1; r2 ] else []
+  | AND (r0, r1, r2) ->
+    if r = r0 || r = r1 || r = r2 then [ r0; r1; r2 ] else []
+  | XOR (r0, r1, r2) ->
+    if r = r0 || r = r1 || r = r2 then [ r0; r1; r2 ] else []
   | _ -> []
 
-(* Determines list of registers contributing to
-   a given register in a given instruction list *)
+(* Determines list of registers contributing to a given register in a given
+   instruction list *)
 let used_regs r ilist = List.map (used r) ilist |> List.concat |> dedup
 
-(* Determines list of registers contributing to a given
-   register in a given instruction list *)
+(* Determines list of registers contributing to a given register in a given
+   instruction list *)
 let contribute l r = used_regs r l
 
 (* Determines the list of registers that contribute to output *)
@@ -93,17 +104,6 @@ let optimize ilist =
   in
   List.filter necessary ilist
 
-(* TODO:
-   reuse variable registers instead of loading the same variable multiple times
-   E.g. a=0;b=+a1;c=+a2;b=*bc;#b.
-   Should be:
-   LOADI r0 #0
-   STORE a r0
-   LOAD r1 a
-   LOADI r2 #1
-   ADD r3 r1 r2
-   LOADI r4 #2
-   ADD r5 r1 r4
-   STORE c r5
-   ...
-*)
+(* TODO: reuse variable registers instead of loading the same variable multiple
+   times E.g. a=0;b=+a1;c=+a2;b=*bc;#b. Should be: LOADI r0 #0 STORE a r0 LOAD
+   r1 a LOADI r2 #1 ADD r3 r1 r2 LOADI r4 #2 ADD r5 r1 r4 STORE c r5 ... *)

@@ -25,7 +25,7 @@ let string_of_regs r1 r2 r3 =
 
 let print_risc = function
   | LOADI (r, j) ->
-      print_endline ("LOADI " ^ string_of_reg r ^ " #" ^ string_of_int j)
+    print_endline ("LOADI " ^ string_of_reg r ^ " #" ^ string_of_int j)
   | LOAD (r, s) -> print_endline ("LOAD " ^ string_of_reg r ^ " " ^ s)
   | STORE (s, r) -> print_endline ("STORE " ^ s ^ " " ^ string_of_reg r)
   | ADD (r1, r2, r3) -> print_endline ("ADD " ^ string_of_regs r1 r2 r3)
