@@ -1,0 +1,5 @@
+READ a;
+READ b;
+c = AND 3 MUL a b ;
+d = ADD c 1 ;
+PRINT d;

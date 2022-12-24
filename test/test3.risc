@@ -1,0 +1,3 @@
+a = ADD 1 2 ;
+b = SUB MUL ADD 1 ADD 2 a 5 8 ;
+PRINT b;

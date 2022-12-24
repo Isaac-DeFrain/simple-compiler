@@ -1,0 +1,6 @@
+b = ADD 5 8 ;
+a = 1 ;
+c = AND a b ;
+PRINT b;
+PRINT a;
+PRINT c;

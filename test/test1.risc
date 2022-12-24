@@ -1,0 +1,4 @@
+READ a;
+READ b;
+c = ADD a b ;
+PRINT c;

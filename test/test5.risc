@@ -1,0 +1,4 @@
+a = ADD 0 1 ;
+b = ADD 1 XOR a 2 ;
+PRINT a;
+PRINT b;
